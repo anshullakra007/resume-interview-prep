@@ -19,9 +19,25 @@ document.addEventListener('DOMContentLoaded', () => {
         themeToggleBtn.innerHTML = currentTheme === 'dark' ? sunIcon : moonIcon;
     };
 
-    // Hide tabs container since we are going single-page continuous
-    if (tabsContainer) {
-        tabsContainer.style.display = 'none';
+    // Render sticky phase navigation
+    function renderPhaseNav() {
+        tabsContainer.innerHTML = '';
+        
+        prepData.forEach((phaseData, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'tab-btn';
+            // Keep it compact: just "Phase 1", "Phase 2", etc.
+            btn.innerText = phaseData.phase.split(':')[0]; 
+            btn.onclick = () => {
+                const phaseEl = document.getElementById(`phase-panel-${index}`);
+                if (phaseEl) {
+                    // Scroll it into view with a slight offset for the sticky header
+                    const y = phaseEl.getBoundingClientRect().top + window.scrollY - 80;
+                    window.scrollTo({top: y, behavior: 'smooth'});
+                }
+            };
+            tabsContainer.appendChild(btn);
+        });
     }
 
     let completedQuestions = JSON.parse(localStorage.getItem('resumePrepCompleted') || '[]');
@@ -38,11 +54,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderContent() {
         contentContainer.innerHTML = '';
         
-        prepData.forEach((phase) => {
+        prepData.forEach((phase, index) => {
             if (!phase || !phase.categories) return;
 
             const phaseContainer = document.createElement('div');
             phaseContainer.className = 'glass-panel phase-panel';
+            phaseContainer.id = `phase-panel-${index}`;
             
             const phaseTitle = document.createElement('h1');
             phaseTitle.className = 'phase-title';
@@ -136,6 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize
     if (typeof prepData !== 'undefined') {
+        renderPhaseNav();
         renderContent();
     } else {
         contentContainer.innerHTML = '<p style="color:red; text-align:center;">Error: data.js not loaded. Please make sure the data script is included.</p>';
