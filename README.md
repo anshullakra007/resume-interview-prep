@@ -1,14 +1,18 @@
-# Resume Interview Preparation
+# Resume Interview Prep
 
-This repository contains my personal study guide and notes for upcoming technical interviews. I put this together to make sure I'm fully prepared for any resume screening rounds or deep-dive technical questions regarding the projects I've built.
+Hey there. If you've stumbled upon this repository, you're looking at my personal study hub for technical interviews. 
 
-The content is structured into four main phases, covering everything from the low-level architecture of my backend projects to general system design, core language fundamentals, and behavioral questions. 
+I built this specifically to prepare for the resume screening and deep-dive rounds. It contains 180 highly customized questions and answers that directly challenge the engineering decisions I made in my past projects.
 
-It includes detailed questions and answers about:
-- My Distributed Code Execution Engine (Spring Boot, Docker sandboxing, async threading)
-- MiniRedis (TCP sockets, concurrency, memory management)
-- The AI Analytics Platform (Scikit-learn, SQLite, data pipelines)
-- My open-source contributions to TheAlgorithms
-- Core concepts across Java, React, SQL, and networking
+Instead of just reviewing a static markdown file, I wanted a more interactive way to study, especially at night. So, I wrapped all the Q&A data into a lightweight static web app. It's built with vanilla HTML, CSS, and JS, and styled with a deep dark mode that cuts out blue light so I can comfortably read through the questions on my phone before falling asleep.
 
-I also built a lightweight, static web interface around these notes. It's heavily optimized for nighttime reading so I can review the material on my phone before bed without straining my eyes.
+You can check out the live version of my study site here:
+https://resume-interview-prep-two.vercel.app
+
+The questions are broken down into four phases:
+1. Deep dives into my Distributed Code Engine (Spring Boot threading, Docker sandboxing) and MiniRedis (TCP sockets, memory management).
+2. Data pipelines and machine learning concepts from my AI Analytics Platform.
+3. General system design, scalability, and behavioral scenarios.
+4. Core fundamentals across Java, React, SQL, and networking.
+
+Feel free to poke around the raw data file if you want to see the exact technical depth of the questions I'm practicing. Wish me luck on the interviews.
