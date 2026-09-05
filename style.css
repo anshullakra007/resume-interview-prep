@@ -80,16 +80,49 @@ body {
   display: flex;
   justify-content: center;
   gap: 0.5rem;
-  margin-bottom: 2rem;
-  position: sticky;
-  top: 1rem;
-  z-index: 100;
-  flex-wrap: wrap;
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
   background: var(--bg-primary);
-  padding: 0.75rem;
-  border-radius: 12px;
+  padding: 0.5rem;
+  border-radius: 50px;
   border: 1px solid var(--glass-border);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); /* A slightly stronger shadow helps it float over content */
+}
+
+/* Light mode specific tweak for the floating dock shadow */
+[data-theme="light"] .tabs-container {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  padding: 0.6rem 1.2rem;
+  border-radius: 50px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: 0.7;
+}
+
+.tab-btn:hover {
+  background: var(--hover-bg);
+  opacity: 1;
+}
+
+.tab-btn.active {
+  background: var(--accent-color);
+  color: #ffffff;
+  opacity: 1;
+}
+
+.category-section {
+  margin-bottom: 3rem;
 }
 
 .phase-panel {
@@ -104,21 +137,6 @@ body {
   text-align: center;
   border-bottom: 2px solid var(--glass-border);
   padding-bottom: 0.5rem;
-}
-
-.tab-btn:hover {
-  background: var(--hover-bg);
-}
-
-.tab-btn.active {
-  background: var(--accent-color);
-  color: #121212;
-  border-color: var(--accent-color);
-  font-weight: 600;
-}
-
-.category-section {
-  margin-bottom: 3rem;
 }
 
 .category-title {
