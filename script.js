@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
         prepData.forEach((phaseData, index) => {
             const button = document.createElement('button');
             button.className = `tab-btn ${index === activePhaseIndex ? 'active' : ''}`;
-            button.innerText = phaseData.phase.split(':')[0]; // e.g. "Phase 1"
+            button.innerText = phaseData.phase; // e.g. "Phase 1: Project Deep-Dives"
             button.onclick = () => {
                 activePhaseIndex = index;
                 renderTabs();
