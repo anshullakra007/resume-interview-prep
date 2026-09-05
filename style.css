@@ -1,0 +1,239 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+:root {
+  /* Warm, extremely dark background to reduce eye strain in complete darkness */
+  --bg-primary: #0c0b0a;
+  --bg-secondary: #141210;
+  
+  /* Soft amber/sepia text to eliminate blue light */
+  --text-primary: #d4c4b7;
+  --text-secondary: #8c7f73;
+  
+  /* Warm orange accent instead of harsh neon */
+  --accent-color: #c97132;
+  --accent-glow: rgba(201, 113, 50, 0.15);
+  
+  /* Extremely subtle glass panels */
+  --glass-bg: rgba(20, 18, 16, 0.7);
+  --glass-border: rgba(212, 196, 183, 0.05);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.7; /* Slightly higher line height for relaxed reading */
+  font-size: 1.05rem; /* Slightly larger base font for easier reading */
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 3rem;
+  animation: fadeInDown 1s ease-out;
+}
+
+.header h1 {
+  font-size: 3rem;
+  font-weight: 600;
+  color: #e0cca8; /* Soft warm gold */
+  margin-bottom: 1rem;
+}
+
+.header p {
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+}
+
+.glass-panel {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.tabs-container {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.tab-btn {
+  background: var(--bg-secondary);
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1 1 auto; /* Allow buttons to grow slightly on mobile */
+  text-align: center;
+}
+
+.tab-btn:hover {
+  color: var(--text-primary);
+  border-color: rgba(212, 196, 183, 0.15);
+}
+
+.tab-btn.active {
+  background: rgba(201, 113, 50, 0.1);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.category-section {
+  margin-bottom: 3rem;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.category-title {
+  font-size: 1.4rem;
+  color: #e0cca8;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: 0.5rem;
+  font-weight: 400;
+}
+
+.accordion-item {
+  margin-bottom: 0.75rem;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg-secondary);
+  border: 1px solid var(--glass-border);
+  transition: all 0.3s ease;
+}
+
+.accordion-header {
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  font-weight: 400;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+  user-select: none;
+}
+
+.accordion-header span {
+  flex: 1;
+  padding-right: 1rem;
+  line-height: 1.5;
+}
+
+.accordion-header .icon {
+  font-size: 1.5rem;
+  color: var(--accent-color);
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.accordion-item.open .icon {
+  transform: rotate(45deg);
+}
+
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s ease;
+  background: var(--bg-primary);
+}
+
+.accordion-item.open .accordion-content {
+  max-height: 2500px;
+  padding: 0 1.25rem 1.25rem 1.25rem;
+  border-top: 1px solid var(--glass-border);
+  margin-top: 0.5rem;
+}
+
+.accordion-content p {
+  color: #b5a496;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Mobile Media Queries */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 1rem;
+  }
+  
+  .header {
+    margin-bottom: 2rem;
+  }
+
+  .header h1 {
+    font-size: 2.2rem;
+  }
+
+  .header p {
+    font-size: 1rem;
+  }
+
+  .glass-panel {
+    padding: 1rem;
+  }
+
+  .tabs-container {
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .tab-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    flex-basis: 45%; /* Two buttons per row on small screens */
+  }
+
+  .accordion-header {
+    font-size: 1rem;
+    padding: 1rem;
+  }
+
+  .accordion-content p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+}
+
+/* Scrollbar customization for dark mode */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: #2a2520;
+  border-radius: 3px;
+}
