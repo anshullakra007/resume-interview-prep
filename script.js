@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 title.innerText = category.title;
                 categorySection.appendChild(title);
 
-                // Add Overview block if it exists
+                // Add Overview block if it exists (for Phase 1 projects)
                 if (category.overview) {
                     const overviewDiv = document.createElement('div');
                     overviewDiv.className = 'project-overview-card';
