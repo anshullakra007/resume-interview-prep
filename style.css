@@ -132,10 +132,57 @@ body {
   background: #2a2a2a;
 }
 
-.accordion-header span {
+.accordion-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-right: 0.8rem;
+  z-index: 2; /* Ensure clicks register */
+}
+
+.progress-checkbox {
+  width: 1.25rem;
+  height: 1.25rem;
+  cursor: pointer;
+  accent-color: var(--accent-color);
+  transition: transform 0.2s;
+}
+
+.progress-checkbox:hover {
+  transform: scale(1.1);
+}
+
+.bookmark-btn {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  opacity: 0.25;
+  transition: all 0.2s ease;
+  padding: 0;
+  line-height: 1;
+}
+
+.bookmark-btn:hover {
+  opacity: 0.8;
+  transform: scale(1.1);
+}
+
+.bookmark-btn.active-bookmark {
+  opacity: 1;
+  filter: drop-shadow(0 0 6px rgba(234, 179, 8, 0.8));
+}
+
+.question-text {
   flex: 1;
   padding-right: 1rem;
   line-height: 1.5;
+  transition: opacity 0.3s ease;
+}
+
+.accordion-item.completed .question-text {
+  opacity: 0.5;
+  text-decoration: line-through;
 }
 
 .accordion-header .icon {

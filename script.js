@@ -2,7 +2,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabsContainer = document.getElementById('tabs-container');
     const contentContainer = document.getElementById('content-container');
     
+    let completedQuestions = JSON.parse(localStorage.getItem('resumePrepCompleted') || '[]');
+    let bookmarkedQuestionId = parseInt(localStorage.getItem('resumePrepBookmark'), 10) || null;
     let activePhaseIndex = 0;
+
+    // Set initial phase to where the bookmark is
+    if (bookmarkedQuestionId) {
+        prepData.forEach((phase, index) => {
+            phase.categories.forEach(cat => {
+                if (cat.questions.some(q => q.id === bookmarkedQuestionId)) {
+                    activePhaseIndex = index;
+                }
+            });
+        });
+    }
 
     function formatText(text) {
         if (!text) return '';
@@ -18,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
         prepData.forEach((phaseData, index) => {
             const button = document.createElement('button');
             button.className = `tab-btn ${index === activePhaseIndex ? 'active' : ''}`;
-            button.innerText = phaseData.phase; // e.g. "Phase 1: Project Deep-Dives"
+            button.innerText = phaseData.phase; 
             button.onclick = () => {
                 activePhaseIndex = index;
                 renderTabs();
@@ -52,17 +65,61 @@ document.addEventListener('DOMContentLoaded', () => {
             category.questions.forEach(q => {
                 const accordionItem = document.createElement('div');
                 accordionItem.className = 'accordion-item';
+                accordionItem.id = `question-${q.id}`;
 
                 const header = document.createElement('div');
                 header.className = 'accordion-header';
                 
+                // Controls container (checkbox & bookmark)
+                const controls = document.createElement('div');
+                controls.className = 'accordion-controls';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'progress-checkbox';
+                checkbox.title = 'Mark as completed';
+                checkbox.checked = completedQuestions.includes(q.id);
+                checkbox.onclick = (e) => {
+                    e.stopPropagation();
+                    if (checkbox.checked) {
+                        if (!completedQuestions.includes(q.id)) completedQuestions.push(q.id);
+                        accordionItem.classList.add('completed');
+                    } else {
+                        completedQuestions = completedQuestions.filter(id => id !== q.id);
+                        accordionItem.classList.remove('completed');
+                    }
+                    localStorage.setItem('resumePrepCompleted', JSON.stringify(completedQuestions));
+                };
+
+                const bookmarkBtn = document.createElement('button');
+                bookmarkBtn.className = `bookmark-btn ${bookmarkedQuestionId === q.id ? 'active-bookmark' : ''}`;
+                bookmarkBtn.innerHTML = '🔖';
+                bookmarkBtn.title = 'Bookmark this question';
+                bookmarkBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    if (bookmarkedQuestionId === q.id) {
+                        bookmarkedQuestionId = null;
+                        localStorage.removeItem('resumePrepBookmark');
+                        bookmarkBtn.classList.remove('active-bookmark');
+                    } else {
+                        bookmarkedQuestionId = q.id;
+                        localStorage.setItem('resumePrepBookmark', q.id);
+                        renderContent(); // Re-render to update bookmark icons across all items
+                    }
+                };
+
+                controls.appendChild(checkbox);
+                controls.appendChild(bookmarkBtn);
+
                 const questionText = document.createElement('span');
+                questionText.className = 'question-text';
                 questionText.innerHTML = formatText(`${q.id}. ${q.question}`);
                 
                 const icon = document.createElement('div');
                 icon.className = 'icon';
                 icon.innerText = '+';
 
+                header.appendChild(controls);
                 header.appendChild(questionText);
                 header.appendChild(icon);
 
@@ -78,6 +135,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 header.onclick = () => {
                     accordionItem.classList.toggle('open');
                 };
+
+                if (completedQuestions.includes(q.id)) {
+                    accordionItem.classList.add('completed');
+                }
 
                 accordionItem.appendChild(header);
                 accordionItem.appendChild(content);
@@ -95,6 +156,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof prepData !== 'undefined') {
         renderTabs();
         renderContent();
+        
+        // Scroll to bookmark on initial load if it exists
+        if (bookmarkedQuestionId) {
+            setTimeout(() => {
+                const item = document.getElementById(`question-${bookmarkedQuestionId}`);
+                if (item) {
+                    item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    item.classList.add('open');
+                }
+            }, 300);
+        }
     } else {
         contentContainer.innerHTML = '<p style="color:red; text-align:center;">Error: data.js not loaded. Please make sure the data script is included.</p>';
     }
