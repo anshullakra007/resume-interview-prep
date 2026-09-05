@@ -19,55 +19,27 @@ document.addEventListener('DOMContentLoaded', () => {
         themeToggleBtn.innerHTML = currentTheme === 'dark' ? sunIcon : moonIcon;
     };
 
+    let activePhaseIndex = 0;
+
     // Render sticky phase navigation
     function renderPhaseNav() {
         tabsContainer.innerHTML = '';
-        const navButtons = [];
         
         prepData.forEach((phaseData, index) => {
             const btn = document.createElement('button');
             btn.className = 'tab-btn';
+            if (index === activePhaseIndex) {
+                btn.classList.add('active');
+            }
             btn.innerText = phaseData.phase.split(':')[0]; 
             btn.onclick = () => {
-                const phaseEl = document.getElementById(`phase-panel-${index}`);
-                if (phaseEl) {
-                    const y = phaseEl.getBoundingClientRect().top + window.scrollY - 20;
-                    window.scrollTo({top: y, behavior: 'smooth'});
-                }
+                activePhaseIndex = index;
+                renderPhaseNav(); // Update active tab styling
+                renderContent();  // Re-render only the new phase
+                window.scrollTo({top: 0, behavior: 'smooth'}); // Scroll to top when switching pages
             };
             tabsContainer.appendChild(btn);
-            navButtons.push(btn);
         });
-
-        // Intersection Observer to highlight active phase on scroll
-        const observerOptions = {
-            root: null,
-            rootMargin: '-20% 0px -60% 0px', // Trigger when a section is roughly in the top middle of viewport
-            threshold: 0
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const activeIndex = entry.target.id.split('-').pop();
-                    navButtons.forEach((btn, idx) => {
-                        if (idx == activeIndex) {
-                            btn.classList.add('active');
-                        } else {
-                            btn.classList.remove('active');
-                        }
-                    });
-                }
-            });
-        }, observerOptions);
-
-        // We will observe the panels after they are rendered
-        setTimeout(() => {
-            prepData.forEach((_, index) => {
-                const panel = document.getElementById(`phase-panel-${index}`);
-                if (panel) observer.observe(panel);
-            });
-        }, 100);
     }
 
     let completedQuestions = JSON.parse(localStorage.getItem('resumePrepCompleted') || '[]');
@@ -84,12 +56,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderContent() {
         contentContainer.innerHTML = '';
         
-        prepData.forEach((phase, index) => {
-            if (!phase || !phase.categories) return;
+        const phase = prepData[activePhaseIndex];
+        if (!phase || !phase.categories) return;
 
-            const phaseContainer = document.createElement('div');
-            phaseContainer.className = 'glass-panel phase-panel';
-            phaseContainer.id = `phase-panel-${index}`;
+        const phaseContainer = document.createElement('div');
+        phaseContainer.className = 'glass-panel phase-panel';
+        phaseContainer.id = `phase-panel-${activePhaseIndex}`;
             
             const phaseTitle = document.createElement('h1');
             phaseTitle.className = 'phase-title';
@@ -177,8 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 phaseContainer.appendChild(categorySection);
             });
 
-            contentContainer.appendChild(phaseContainer);
-        });
+        contentContainer.appendChild(phaseContainer);
     }
 
     // Initialize
