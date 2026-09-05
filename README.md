@@ -9,10 +9,17 @@ Instead of just reviewing a static markdown file, I wanted a more interactive wa
 You can check out the live version of my study site here:
 https://resume-interview-prep-two.vercel.app
 
-The questions are broken down into four phases:
+### How it works
+I designed the site to be a continuous, single-page feed so I can just endlessly scroll through all my study notes. I also built in a few features to make studying easier:
+- **Auto-Highlighting:** All the core technical keywords and code snippets are automatically highlighted with a glowing neon marker effect, so the important concepts immediately pop out when I skim.
+- **Progress Tracking:** Every question has a checkbox next to it. Checking it off gracefully fades out the question so I know I've mastered it (it saves to local storage, so I don't lose progress if I close the tab).
+- **Smart Bookmarking:** I added a little bookmark icon (🔖) on every question. When clicked, it remembers exactly where I left off. The next time I open the site, it automatically scrolls me straight down to my bookmark so I can pick up right where I stopped.
+
+### The Content
+The questions are broken down into four continuous phases:
 1. Deep dives into my Distributed Code Engine (Spring Boot threading, Docker sandboxing) and MiniRedis (TCP sockets, memory management).
 2. Data pipelines and machine learning concepts from my AI Analytics Platform.
 3. General system design, scalability, and behavioral scenarios.
 4. Core fundamentals across Java, React, SQL, and networking.
 
-Feel free to poke around the raw data file if you want to see the exact technical depth of the questions I'm practicing. Wish me luck on the interviews.
+Feel free to poke around the raw data file if you want to see the exact technical depth of the questions I'm practicing. Wish me luck on the interviews!
