@@ -1,7 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
     const contentContainer = document.getElementById('content-container');
     const tabsContainer = document.getElementById('tabs-container');
-    
+    const themeToggleBtn = document.getElementById('theme-toggle');
+
+    // Theme logic
+    let currentTheme = localStorage.getItem('resumePrepTheme') || 'dark';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    themeToggleBtn.innerText = currentTheme === 'dark' ? '☀️' : '🌙';
+
+    themeToggleBtn.onclick = () => {
+        currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        localStorage.setItem('resumePrepTheme', currentTheme);
+        themeToggleBtn.innerText = currentTheme === 'dark' ? '☀️' : '🌙';
+    };
+
     // Hide tabs container since we are going single-page continuous
     if (tabsContainer) {
         tabsContainer.style.display = 'none';

@@ -1,17 +1,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Standard, highly readable dark mode */
-  --bg-primary: #121212;
-  --bg-secondary: #1e1e1e;
-  
-  /* High contrast text for perfect readability */
-  --text-primary: #f5f5f5;
-  --text-secondary: #cccccc;
-  
-  /* Clear, readable accent color */
-  --accent-color: #60a5fa;
+  --bg-primary: #111827;
+  --text-primary: #f9fafb;
+  --accent-color: #3b82f6;
+  --glass-bg: rgba(31, 41, 55, 0.8);
   --glass-border: rgba(255, 255, 255, 0.1);
+  --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+  --highlight-code-bg: linear-gradient(120deg, rgba(234, 179, 8, 0.9) 0%, rgba(250, 204, 21, 0.8) 100%);
+  --highlight-code-text: #1a1a1a;
+  --highlight-strong-bg: linear-gradient(120deg, rgba(96, 165, 250, 0.3) 0%, rgba(59, 130, 246, 0.1) 100%);
+  --highlight-strong-text: #93c5fd;
+  --checkbox-accent: #3b82f6;
+  --hover-bg: #2a2a2a;
+}
+
+[data-theme="light"] {
+  --bg-primary: #f8fafc;
+  --text-primary: #0f172a;
+  --accent-color: #2563eb;
+  --glass-bg: #ffffff;
+  --glass-border: #cbd5e1;
+  --highlight-code-bg: linear-gradient(120deg, rgba(250, 204, 21, 0.9) 0%, rgba(253, 224, 71, 0.8) 100%);
+  --highlight-code-text: #000000;
+  --highlight-strong-bg: linear-gradient(120deg, rgba(37, 99, 235, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%);
+  --highlight-strong-text: #1d4ed8;
+  --checkbox-accent: #2563eb;
+  --hover-bg: #f1f5f9;
 }
 
 * {
@@ -21,7 +36,7 @@
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-main);
   background-color: var(--bg-primary);
   color: var(--text-primary);
   line-height: 1.6;
@@ -29,6 +44,7 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .app-container {
@@ -45,12 +61,11 @@ body {
 .header h1 {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--text-primary);
   margin-bottom: 1rem;
 }
 
 .header p {
-  color: var(--text-secondary);
   font-size: 1.1rem;
 }
 
@@ -80,7 +95,7 @@ body {
 }
 
 .tab-btn:hover {
-  background: #2a2a2a;
+  background: var(--hover-bg);
 }
 
 .tab-btn.active {
@@ -96,7 +111,7 @@ body {
 
 .category-title {
   font-size: 1.5rem;
-  color: #ffffff;
+  color: var(--text-primary);
   margin-bottom: 1rem;
   border-bottom: 1px solid var(--glass-border);
   padding-bottom: 0.5rem;
@@ -126,7 +141,7 @@ body {
 }
 
 .accordion-header:hover {
-  background: #2a2a2a;
+  background: var(--hover-bg);
 }
 
 .accordion-controls {
@@ -141,7 +156,7 @@ body {
   width: 1.25rem;
   height: 1.25rem;
   cursor: pointer;
-  accent-color: var(--accent-color);
+  accent-color: var(--checkbox-accent);
   transition: transform 0.2s;
 }
 
@@ -192,19 +207,19 @@ body {
 
 /* Highlighter styling for keywords */
 .inline-code {
-  background: linear-gradient(120deg, rgba(234, 179, 8, 0.9) 0%, rgba(250, 204, 21, 0.8) 100%);
-  color: #1a1a1a;
+  background: var(--highlight-code-bg);
+  color: var(--highlight-code-text);
   padding: 0.15rem 0.4rem;
   border-radius: 4px;
   font-family: monospace;
   font-size: 0.9em;
   font-weight: 600;
-  box-shadow: 0 0 10px rgba(234, 179, 8, 0.2);
+  box-shadow: 0 0 10px rgba(234, 179, 8, 0.15);
 }
 
 strong, .keyword-highlight {
-  background: linear-gradient(120deg, rgba(96, 165, 250, 0.3) 0%, rgba(59, 130, 246, 0.1) 100%);
-  color: #93c5fd;
+  background: var(--highlight-strong-bg);
+  color: var(--highlight-strong-text);
   padding: 0.1rem 0.3rem;
   border-radius: 4px;
   font-weight: 600;
