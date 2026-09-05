@@ -2,6 +2,12 @@
 
 This repository contains my personal study guide and notes for upcoming technical interviews. I put this together to make sure I'm fully prepared for any resume screening rounds or deep-dive technical questions regarding the projects I've built.
 
+### Deploy the Site
+
+Since Vercel enforces SAML SSO on the linked enterprise account, personal access tokens cannot automatically trigger deployments. You can deploy this static site instantly by clicking the button below:
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fanshullakra007%2Fresume-interview-prep)
+
 The content is structured into four main phases, covering everything from the low-level architecture of my backend projects to general system design, core language fundamentals, and behavioral questions. 
 
 It includes detailed questions and answers about:
@@ -12,5 +18,3 @@ It includes detailed questions and answers about:
 - Core concepts across Java, React, SQL, and networking
 
 I also built a lightweight, static web interface around these notes. It's heavily optimized for nighttime reading so I can review the material on my phone before bed without straining my eyes.
-
-The code here is mostly the static site generation and the raw data file containing the 180 questions I'm practicing. If you're reading this, feel free to browse the questions in the data file to get a sense of the technical depth I'm aiming for.
