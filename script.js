@@ -44,6 +44,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let completedQuestions = JSON.parse(localStorage.getItem('resumePrepCompleted') || '[]');
 
+    function updateProgress() {
+        const progressCountSpan = document.getElementById('progress-count');
+        const progressBarFill = document.getElementById('progress-bar-fill');
+        
+        if (!progressCountSpan || !progressBarFill || typeof prepData === 'undefined') return;
+
+        let totalQuestions = 0;
+        prepData.forEach(phase => {
+            if (phase.categories) {
+                phase.categories.forEach(cat => {
+                    totalQuestions += cat.questions.length;
+                });
+            }
+        });
+
+        const completedCount = completedQuestions.length;
+        progressCountSpan.innerText = `${completedCount} / ${totalQuestions}`;
+        
+        const percentage = totalQuestions === 0 ? 0 : (completedCount / totalQuestions) * 100;
+        progressBarFill.style.width = `${percentage}%`;
+    }
+
     function formatText(text) {
         if (!text) return '';
         let escaped = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -107,6 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             accordionItem.classList.remove('completed');
                         }
                         localStorage.setItem('resumePrepCompleted', JSON.stringify(completedQuestions));
+                        updateProgress();
                     };
 
                     controls.appendChild(checkbox);
@@ -154,6 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize
     if (typeof prepData !== 'undefined') {
+        updateProgress();
         renderPhaseNav();
         renderContent();
     } else {
