@@ -62,24 +62,21 @@ body {
 }
 
 .tabs-container {
-  display: flex;
-  justify-content: center;
-  gap: 0.75rem;
-  margin-bottom: 2.5rem;
-  flex-wrap: wrap;
+  display: none;
 }
 
-.tab-btn {
-  background: var(--bg-primary);
-  border: 1px solid var(--glass-border);
-  color: var(--text-primary);
-  padding: 0.75rem 1.25rem;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
+.phase-panel {
+  margin-bottom: 3rem;
+}
+
+.phase-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent-color);
+  margin-bottom: 1.5rem;
   text-align: center;
+  border-bottom: 2px solid var(--glass-border);
+  padding-bottom: 0.5rem;
 }
 
 .tab-btn:hover {
@@ -233,21 +230,6 @@ strong, .keyword-highlight {
   padding: 0.1rem 0.3rem;
   border-radius: 4px;
   font-weight: 600;
-}
-
-/* Elegant Laptop Layout */
-@media (min-width: 1024px) {
-  .accordion-list {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    align-items: start;
-  }
-  
-  .accordion-item {
-    margin-bottom: 0; /* Reset margin since we use gap */
-    height: fit-content;
-  }
 }
 
 /* Mobile Media Queries */
