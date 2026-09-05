@@ -1,32 +1,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  --bg-primary: #111827;
+  --bg-primary: #121212;
   --text-primary: #f9fafb;
   --accent-color: #3b82f6;
-  --glass-bg: rgba(31, 41, 55, 0.8);
-  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-bg: #1e1e1e;
+  --glass-border: #333333;
   --font-main: 'Inter', system-ui, -apple-system, sans-serif;
-  --highlight-code-bg: linear-gradient(120deg, rgba(234, 179, 8, 0.9) 0%, rgba(250, 204, 21, 0.8) 100%);
-  --highlight-code-text: #1a1a1a;
-  --highlight-strong-bg: linear-gradient(120deg, rgba(96, 165, 250, 0.3) 0%, rgba(59, 130, 246, 0.1) 100%);
-  --highlight-strong-text: #93c5fd;
+  --highlight-code-bg: #facc15;
+  --highlight-code-text: #111827;
+  --highlight-strong-bg: #93c5fd;
+  --highlight-strong-text: #172554;
   --checkbox-accent: #3b82f6;
   --hover-bg: #2a2a2a;
 }
 
 [data-theme="light"] {
-  --bg-primary: #f8fafc;
-  --text-primary: #0f172a;
+  --bg-primary: #ffffff;
+  --text-primary: #111827;
   --accent-color: #2563eb;
-  --glass-bg: #ffffff;
-  --glass-border: #cbd5e1;
-  --highlight-code-bg: linear-gradient(120deg, rgba(250, 204, 21, 0.9) 0%, rgba(253, 224, 71, 0.8) 100%);
-  --highlight-code-text: #000000;
-  --highlight-strong-bg: linear-gradient(120deg, rgba(37, 99, 235, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%);
-  --highlight-strong-text: #1d4ed8;
+  --glass-bg: #f3f4f6;
+  --glass-border: #e5e7eb;
+  --highlight-code-bg: #fde047;
+  --highlight-code-text: #111827;
+  --highlight-strong-bg: #bfdbfe;
+  --highlight-strong-text: #1e3a8a;
   --checkbox-accent: #2563eb;
-  --hover-bg: #f1f5f9;
+  --hover-bg: #e5e7eb;
 }
 
 * {
@@ -70,7 +70,7 @@ body {
 }
 
 .glass-panel {
-  background: var(--bg-secondary);
+  background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   border-radius: 12px;
   padding: 2rem;
@@ -136,7 +136,7 @@ body {
   font-size: 1.1rem;
   color: var(--text-primary);
   user-select: none;
-  background: var(--bg-secondary);
+  background: var(--glass-bg);
   transition: background 0.2s ease;
 }
 
@@ -214,7 +214,6 @@ body {
   font-family: monospace;
   font-size: 0.9em;
   font-weight: 600;
-  box-shadow: 0 0 10px rgba(234, 179, 8, 0.15);
 }
 
 strong, .keyword-highlight {
