@@ -4,6 +4,15 @@ document.addEventListener('DOMContentLoaded', () => {
     
     let activePhaseIndex = 0;
 
+    function formatText(text) {
+        if (!text) return '';
+        let escaped = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        escaped = escaped.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+        escaped = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        escaped = escaped.replace(/\n/g, '<br/>');
+        return escaped;
+    }
+
     function renderTabs() {
         tabsContainer.innerHTML = '';
         prepData.forEach((phaseData, index) => {
@@ -48,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 header.className = 'accordion-header';
                 
                 const questionText = document.createElement('span');
-                questionText.innerText = `${q.id}. ${q.question}`;
+                questionText.innerHTML = formatText(`${q.id}. ${q.question}`);
                 
                 const icon = document.createElement('div');
                 icon.className = 'icon';
@@ -61,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 content.className = 'accordion-content';
                 
                 const answerText = document.createElement('p');
-                answerText.innerText = q.answer;
+                answerText.innerHTML = formatText(q.answer);
                 
                 content.appendChild(answerText);
 
