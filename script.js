@@ -175,6 +175,19 @@ document.addEventListener('DOMContentLoaded', () => {
         contentContainer.appendChild(phaseContainer);
     }
 
+    // Reset Progress Logic
+    const resetBtn = document.getElementById('reset-progress');
+    if (resetBtn) {
+        resetBtn.onclick = () => {
+            if (confirm('Are you sure you want to reset all your progress? This cannot be undone.')) {
+                completedQuestions = [];
+                localStorage.setItem('resumePrepCompleted', JSON.stringify(completedQuestions));
+                updateProgress();
+                renderContent();
+            }
+        };
+    }
+
     // Initialize
     if (typeof prepData !== 'undefined') {
         updateProgress();

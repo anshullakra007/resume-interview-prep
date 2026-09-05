@@ -283,6 +283,25 @@ strong, .keyword-highlight {
   transition: width 0.4s ease;
 }
 
+.reset-btn {
+  background: transparent;
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.reset-btn:hover {
+  opacity: 1;
+  background: var(--hover-bg);
+  color: #ef4444; /* Subtle red hover hint */
+}
+
 /* Mobile Media Queries */
 @media (max-width: 768px) {
   .app-container {
