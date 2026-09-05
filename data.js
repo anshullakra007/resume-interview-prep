@@ -4,43 +4,60 @@ const prepData = [
     "categories": [
       {
         "title": "Distributed Code Engine",
-        "questions": [
-          {
-            "id": 1,
-            "question": "Project Overview & Architecture (STAR Method)",
-            "answer": "**Situation**: The challenge was to build a highly scalable, secure code execution environment (like LeetCode) where users could submit untrusted code (Java, Python, C++) and get real-time execution results without crashing the host server or allowing malicious network access.\n\n**Task**: Design and implement a distributed backend API capable of handling heavy concurrent code submissions, enforcing strict memory/time limits, and isolating execution environments perfectly.\n\n**Action**: \n- **Tech Stack**: Built the backend using **Java Spring Boot** due to its robust thread management (`ThreadPoolTaskExecutor`).\n- **Concurrency & Backpressure**: Implemented `CallerRunsPolicy` to naturally throttle incoming requests when the server hits max capacity, ensuring no Out-Of-Memory (OOM) crashes. Used `CompletableFuture` for non-blocking asynchronous execution.\n- **Sandboxing**: Integrated the **Docker-Java API** to spin up isolated containers with network access stripped (`--network none`) and memory capped at 256MB. \n- **Optimization**: To combat cold-start latency, I engineered a pool of \"pre-warmed\" Docker containers. \n\n**Result**: Successfully benchmarked the system at a stable **130.64 requests/second**. The system flawlessly handles infinite loops (via timeouts) and memory leaks (via Linux Cgroups OOM killer)."
-          }
-        ]
+        "questions": [],
+        "overview": {
+          "techStack": [
+            "Java",
+            "Spring Boot",
+            "Docker",
+            "CompletableFuture",
+            "ThreadPoolTaskExecutor"
+          ],
+          "starStory": "**Situation**: Needed a highly scalable, secure execution environment for untrusted user code (like a LeetCode backend).\n\n**Task**: Build a distributed code engine capable of securely compiling and executing arbitrary code with low latency and strict resource limits.\n\n**Action**: Implemented a Spring Boot backend utilizing `ThreadPoolTaskExecutor` with a `CallerRunsPolicy` for natural backpressure. Integrated Docker with strict 256MB memory caps and stripped network access to sandbox executions. Optimized latency by utilizing a pool of \"pre-warmed\" Docker containers.\n\n**Result**: Achieved a robust, secure execution engine benchmarking at 130.64 requests/sec with minimal latency overhead."
+        }
       },
       {
         "title": "MiniRedis (In-Memory Key-Value Store)",
-        "questions": [
-          {
-            "id": 2,
-            "question": "Project Overview & Architecture (STAR Method)",
-            "answer": "**Situation**: I wanted to deeply understand low-level networking, thread management, and the Redis serialization protocol (RESP) without relying on high-level abstractions like Netty.\n\n**Task**: Build a fully functional, concurrent in-memory key-value store from scratch in Java that complies with the actual Redis protocol.\n\n**Action**:\n- **Tech Stack**: Built entirely from scratch using **Java Core (Bare-metal TCP Sockets)** and **Concurrency Utilities**.\n- **Networking**: Implemented a multi-threaded server using `ServerSocket` and an `ExecutorService` thread pool to hand off incoming connections rapidly without blocking the main thread.\n- **Concurrency**: Used `ConcurrentHashMap` as the core data structure to guarantee thread-safe read/writes with bucket-level locking, avoiding the massive bottleneck of global locks.\n- **Protocol**: Hand-coded the parser for the RESP protocol to read raw byte streams from the TCP socket, process commands (GET, SET, DEL), and write properly formatted byte responses back to the client.\n\n**Result**: Created a highly performant, thread-safe KV store capable of handling thousands of concurrent connections without data corruption or thread starvation."
-          }
-        ]
+        "questions": [],
+        "overview": {
+          "techStack": [
+            "Java",
+            "TCP Sockets",
+            "ExecutorService",
+            "ConcurrentHashMap",
+            "I/O Streams"
+          ],
+          "starStory": "**Situation**: Wanted to deeply understand the internals of in-memory data stores, concurrency, and low-level network programming.\n\n**Task**: Build a high-performance, concurrent, in-memory key-value store from scratch without relying on heavy frameworks like Netty.\n\n**Action**: Engineered a custom TCP server using bare-metal Java Sockets and an `ExecutorService` thread pool. Implemented the core storage engine using bucket-level locking via `ConcurrentHashMap` to ensure high concurrency without thread starvation. Designed custom RESP protocol parsing for client communication.\n\n**Result**: Delivered a fully functional, highly concurrent key-value store capable of handling rapid concurrent read/write operations with minimal GC pause impact."
+        }
       },
       {
         "title": "AI-Powered Customer Analytics Platform",
-        "questions": [
-          {
-            "id": 3,
-            "question": "Project Overview & Architecture (STAR Method)",
-            "answer": "**Situation**: Businesses often struggle to identify which users are about to churn and fail to act before the user leaves.\n\n**Task**: Build an end-to-end analytics platform that not only predicts user churn but automatically generates hyper-personalized retention emails to save the account.\n\n**Action**:\n- **Tech Stack**: **Python**, **Scikit-learn**, **SQLite**, **Streamlit**, and the **Google Gemini Flash SDK**.\n- **Machine Learning**: Engineered a robust data pipeline and trained classification models using Scikit-learn, carefully handling the severe class imbalances typical in churn datasets.\n- **A/B Testing**: Built a statistical simulator to rigorously A/B test different retention strategies.\n- **Generative AI**: Integrated the Google Gemini API to dynamically consume the user's specific churn factors and generate a highly personalized, targeted retention email.\n- **UI**: Wrapped the entire pipeline in an interactive Streamlit dashboard for easy visualization.\n\n**Result**: Delivered a cohesive, full-stack ML product that bridges the gap between predictive analytics (who will churn) and generative action (how to keep them)."
-          }
-        ]
+        "questions": [],
+        "overview": {
+          "techStack": [
+            "Python",
+            "SQLite",
+            "Scikit-Learn",
+            "Pandas",
+            "Streamlit",
+            "Google Gemini API"
+          ],
+          "starStory": "**Situation**: Businesses struggle to proactively identify at-risk customers and effectively retain them before they churn.\n\n**Task**: Develop an end-to-end analytics platform to predict customer churn and generate automated, personalized retention strategies.\n\n**Action**: Built a data pipeline to train Scikit-learn classification models on imbalanced datasets. Engineered a statistical A/B testing simulator to validate metrics. Integrated the Google Gemini Flash SDK to dynamically generate hyper-personalized retention emails based on specific churn indicators, wrapped in a real-time Streamlit dashboard.\n\n**Result**: Created a comprehensive, AI-driven retention tool that accurately flags at-risk users and provides immediate, actionable engagement strategies."
+        }
       },
       {
         "title": "TheAlgorithms (Java Open Source Contribution)",
-        "questions": [
-          {
-            "id": 4,
-            "question": "Project Overview & Architecture (STAR Method)",
-            "answer": "**Situation**: TheAlgorithms is one of the largest open-source repositories for data structures and algorithms. Their standard Merge Sort implementation was strictly sequential and bottlenecked on large datasets.\n\n**Task**: Contribute a thread-safe, highly optimized concurrent version of Merge Sort to improve sorting performance on modern multi-core processors.\n\n**Action**:\n- **Tech Stack**: **Java Core Concurrency API** (`ThreadPoolExecutor`) and **JUnit 5**.\n- **Implementation**: Engineered a `ConcurrentMergeSort` algorithm that recursively slices the array and distributes the sorting workload across a `ThreadPoolExecutor`.\n- **Optimization**: Implemented a \"smart sequential fallback threshold\"\u2014when sub-arrays become small enough, the algorithm automatically falls back to sequential sorting because the OS overhead of thread context-switching becomes heavier than the sorting itself.\n- **Testing**: Wrote exhaustive, heavily scrutinized JUnit 5 test suites to prove absolute thread-safety and correctness under extreme concurrency to pass strict open-source review.\n\n**Result**: The PR was successfully merged by maintainers, delivering a mathematically proven speedup for massive datasets over the legacy sequential implementation."
-          }
-        ]
+        "questions": [],
+        "overview": {
+          "techStack": [
+            "Java",
+            "Multithreading",
+            "ThreadPoolExecutor",
+            "JUnit 5",
+            "Git"
+          ],
+          "starStory": "**Situation**: TheAlgorithms repository required highly optimized, thread-safe implementations of classic sorting algorithms for massive datasets.\n\n**Task**: Design and contribute a `ConcurrentMergeSort` algorithm that significantly outperforms the standard sequential approach.\n\n**Action**: Implemented a multithreaded merge sort utilizing a `ThreadPoolExecutor`. Engineered a \"smart sequential fallback threshold\" to dynamically switch to sequential sorting for small arrays, preventing heavy OS context-switching overhead. Backed the implementation with exhaustive JUnit 5 concurrency tests.\n\n**Result**: Successfully merged the optimized algorithm, achieving massive speedups for large arrays and passing strict static analysis checks from core maintainers."
+        }
       }
     ]
   },

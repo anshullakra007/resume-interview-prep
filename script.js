@@ -99,6 +99,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 title.innerText = category.title;
                 categorySection.appendChild(title);
 
+                // Add Overview block if it exists
+                if (category.overview) {
+                    const overviewDiv = document.createElement('div');
+                    overviewDiv.className = 'project-overview-card';
+                    
+                    if (category.overview.techStack && category.overview.techStack.length > 0) {
+                        const techStackDiv = document.createElement('div');
+                        techStackDiv.className = 'tech-stack-container';
+                        category.overview.techStack.forEach(tech => {
+                            const techPill = document.createElement('span');
+                            techPill.className = 'tech-pill';
+                            techPill.innerText = tech;
+                            techStackDiv.appendChild(techPill);
+                        });
+                        overviewDiv.appendChild(techStackDiv);
+                    }
+
+                    if (category.overview.starStory) {
+                        const starDiv = document.createElement('div');
+                        starDiv.className = 'star-story';
+                        starDiv.innerHTML = formatText(category.overview.starStory);
+                        overviewDiv.appendChild(starDiv);
+                    }
+
+                    categorySection.appendChild(overviewDiv);
+                }
+
                 const accordionList = document.createElement('div');
                 accordionList.className = 'accordion-list';
 
