@@ -7,78 +7,8 @@ const prepData = [
         "questions": [
           {
             "id": 1,
-            "question": "Can you explain the architecture of your Distributed Code Engine from client request to execution result?",
-            "answer": "The client sends code via an HTTP POST request to the Spring Boot REST API. The `CodeController` hands the request to a `ThreadPoolTaskExecutor` using a `CompletableFuture` for async processing. A `DockerSandboxService` then allocates a pre-warmed Docker container (C++, Java, or Python), maps the code via stdin, executes it, captures stdout/stderr, and returns the `ExecutionResult` back through the API."
-          },
-          {
-            "id": 2,
-            "question": "Why did you choose Spring Boot over Node.js, Go, or Python for this specific backend?",
-            "answer": "Spring Boot natively handles multithreading very well through its underlying Tomcat server and thread pools, which is crucial for concurrent execution tasks. Java's robust `CompletableFuture` and `ThreadPoolTaskExecutor` provide fine-grained control over concurrency (like backpressure) that is harder to achieve in Node.js's single-threaded event loop."
-          },
-          {
-            "id": 3,
-            "question": "How exactly does `CallerRunsPolicy` act as a natural backpressure system in your application?",
-            "answer": "When the `ThreadPoolTaskExecutor` reaches its maximum pool size and the task queue is full, the `CallerRunsPolicy` forces the thread that submitted the task (the Tomcat HTTP thread) to execute the task itself. This blocks the HTTP thread from accepting new requests, inherently throttling incoming traffic and preventing the server from running out of memory."
-          },
-          {
-            "id": 4,
-            "question": "What would happen to your server if you used `AbortPolicy` or `DiscardPolicy` instead of `CallerRunsPolicy` under heavy load?",
-            "answer": "`AbortPolicy` would throw a `RejectedExecutionException`, causing the server to return 500 errors to users immediately. `DiscardPolicy` would silently drop the code execution requests, leading to users waiting indefinitely for a response that will never arrive."
-          },
-          {
-            "id": 5,
-            "question": "You mentioned keeping latency low with \"pre-warmed\" Docker containers. How is this pool managed in your Java code?",
-            "answer": "I maintain a configurable pool (e.g., a `BlockingQueue` or a concurrent list) of container IDs that have already been created and started using the `docker-java` API. When a request comes in, a container is popped from the pool, used for execution, cleaned up, and then returned to the pool, completely bypassing the cold-start delay of `docker run`."
-          },
-          {
-            "id": 6,
-            "question": "How do you map incoming concurrent requests to an available pre-warmed container safely?",
-            "answer": "By using a thread-safe data structure like an `ArrayBlockingQueue` for the container pool. When a thread needs a container, it calls `take()`, which blocks if no containers are available. Once finished, it calls `put()` to return it, ensuring no two threads use the same container simultaneously."
-          },
-          {
-            "id": 7,
-            "question": "How do you physically strip network access from the Docker containers programmatically?",
-            "answer": "When creating the container via the `docker-java` API, I set the network mode to `none` (e.g., `--network none` in CLI). This ensures the container has no network interfaces other than the loopback, preventing users from making external API calls or launching DDoS attacks from within the sandbox."
-          },
-          {
-            "id": 8,
-            "question": "How did you determine that 256MB was the optimal memory cap? What happens exactly when a user submits a memory leak?",
-            "answer": "256MB provides enough headroom for the JVM or Python runtime to start up and execute basic algorithms without starving the host machine, allowing for a higher density of concurrent containers. If a user code leaks memory, the Docker daemon's Cgroups limit kicks in, and the Linux OOM (Out Of Memory) Killer terminates the container process. The backend catches the exit code (usually 137) and returns a \"Memory Limit Exceeded\" error."
-          },
-          {
-            "id": 9,
-            "question": "How are you handling infinite loops submitted by the user? How is the timeout mechanism implemented?",
-            "answer": "I implemented a timeout using Java's `CompletableFuture.orTimeout()` or by scheduling a timeout task. If the execution exceeds a threshold (e.g., 5 seconds), the backend uses the `docker-java` API to forcefully kill the container process, returning a \"Time Limit Exceeded\" error to the user."
-          },
-          {
-            "id": 10,
-            "question": "Can you explain how you use Java's `CompletableFuture` for asynchronous processing?",
-            "answer": "I wrap the code execution logic in a `CompletableFuture.supplyAsync()`, passing it my custom `ThreadPoolTaskExecutor`. This frees up the Tomcat HTTP thread immediately (if using Spring WebFlux or DeferredResult) and allows the execution to happen in the background."
-          },
-          {
-            "id": 11,
-            "question": "How does your `CodeController` interact with the `ThreadPoolTaskExecutor` without blocking the main HTTP thread?",
-            "answer": "The controller method returns a `CompletableFuture<ResponseEntity>` or `DeferredResult`. Tomcat threads handle the incoming HTTP request, hand the heavy Docker execution to the `ThreadPoolTaskExecutor`, and are immediately released back to the Tomcat pool to accept more HTTP connections."
-          },
-          {
-            "id": 12,
-            "question": "If a user submits C++ code, how is the compilation step sandboxed versus the execution step?",
-            "answer": "Both occur within the same sandboxed container. First, `g++` is invoked via `docker exec` to compile the code. If successful, the compiled binary is executed in a subsequent `docker exec` command. This ensures the compiler itself cannot be exploited to harm the host machine."
-          },
-          {
-            "id": 13,
-            "question": "How did you securely pass the user's code to the Docker container (e.g., stdin vs file volume mapping)?",
-            "answer": "File volume mapping can be risky and slow. Instead, I stream the code directly to a file inside the container using Docker's copy archive API, or pass it via standard input (stdin) during the compilation/execution `docker exec` command, keeping the host file system completely isolated."
-          },
-          {
-            "id": 14,
-            "question": "How do you capture the output (stdout/stderr) from the Docker container back to the Spring Boot application?",
-            "answer": "The `docker-java` API provides an `ExecStartResultCallback` that allows me to attach input/output streams. I capture the `stdout` and `stderr` streams from this callback into a Java `ByteArrayOutputStream`, which is then converted to a string and sent back in the HTTP response."
-          },
-          {
-            "id": 15,
-            "question": "What were the specific bottlenecks you encountered when benchmarking to 130.64 requests/sec, and how did you measure this?",
-            "answer": "I used JMeter/Apache Bench for load testing. The primary bottleneck was the host machine's CPU context switching and the Docker daemon's API limits when handling hundreds of concurrent `docker exec` commands. Pre-warming containers and using `CallerRunsPolicy` leveled this off to a stable 130 req/sec."
+            "question": "Project Overview & Architecture (STAR Method)",
+            "answer": "**Situation**: The challenge was to build a highly scalable, secure code execution environment (like LeetCode) where users could submit untrusted code (Java, Python, C++) and get real-time execution results without crashing the host server or allowing malicious network access.\n\n**Task**: Design and implement a distributed backend API capable of handling heavy concurrent code submissions, enforcing strict memory/time limits, and isolating execution environments perfectly.\n\n**Action**: \n- **Tech Stack**: Built the backend using **Java Spring Boot** due to its robust thread management (`ThreadPoolTaskExecutor`).\n- **Concurrency & Backpressure**: Implemented `CallerRunsPolicy` to naturally throttle incoming requests when the server hits max capacity, ensuring no Out-Of-Memory (OOM) crashes. Used `CompletableFuture` for non-blocking asynchronous execution.\n- **Sandboxing**: Integrated the **Docker-Java API** to spin up isolated containers with network access stripped (`--network none`) and memory capped at 256MB. \n- **Optimization**: To combat cold-start latency, I engineered a pool of \"pre-warmed\" Docker containers. \n\n**Result**: Successfully benchmarked the system at a stable **130.64 requests/second**. The system flawlessly handles infinite loops (via timeouts) and memory leaks (via Linux Cgroups OOM killer)."
           }
         ]
       },
@@ -86,79 +16,9 @@ const prepData = [
         "title": "MiniRedis (In-Memory Key-Value Store)",
         "questions": [
           {
-            "id": 16,
-            "question": "Why did you decide to use bare-metal Java TCP sockets instead of an existing high-performance framework like Netty?",
-            "answer": "I wanted to fundamentally understand how network I/O, threads, and socket buffers interact at a low level. While Netty abstracts away NIO and event loops efficiently, building it from scratch with `java.net.ServerSocket` exposed me to the raw challenges of blocking I/O and thread management."
-          },
-          {
-            "id": 17,
-            "question": "Can you walk me through the lifecycle of a single connection in your MiniRedis server?",
-            "answer": "The main server thread listens on `ServerSocket.accept()`. When a client connects, it returns a `Socket` object. This socket is wrapped in a `Runnable` client handler and submitted to the `ExecutorService`. The handler reads the input stream (RESP protocol), parses the command, accesses the `ConcurrentHashMap`, writes the response to the output stream, and closes the socket when the client disconnects."
-          },
-          {
-            "id": 18,
-            "question": "You used an `ExecutorService` thread pool to hand off incoming connections. How did you size this pool?",
-            "answer": "The pool size was based on the expected concurrent connections and hardware. Since blocking network I/O is thread-heavy (not CPU-heavy), I used a larger pool (e.g., a CachedThreadPool or FixedThreadPool of ~200) to ensure threads waiting on socket reads don't block CPU-bound tasks."
-          },
-          {
-            "id": 19,
-            "question": "What happens if 10,000 clients connect simultaneously? How does the OS handle the socket backlog?",
-            "answer": "If the thread pool is exhausted, `ServerSocket.accept()` cannot be called fast enough. The OS places incoming TCP SYNs into the TCP backlog queue. If the backlog queue fills up, the OS starts dropping packets or sending TCP RST (connection refused), preventing the server application from crashing but failing client connections."
-          },
-          {
-            "id": 20,
-            "question": "Explain how `ConcurrentHashMap` achieves bucket-level locking and why that's crucial for your database.",
-            "answer": "Unlike a regular `HashTable` that locks the entire map for every read/write, `ConcurrentHashMap` in Java 8+ uses CAS (Compare-And-Swap) for reads and locks only the specific array bucket (node) being written to. This allows thousands of parallel clients to read and write to different keys simultaneously without blocking each other."
-          },
-          {
-            "id": 21,
-            "question": "Why did you choose `ConcurrentHashMap` over `Collections.synchronizedMap` or a `ReadWriteLock`?",
-            "answer": "`Collections.synchronizedMap` locks the entire object, causing massive contention. A `ReadWriteLock` allows concurrent reads but blocks all reads during a write. `ConcurrentHashMap` allows fully concurrent reads and concurrent writes to *different* buckets, making it vastly superior for a high-throughput key-value store."
-          },
-          {
-            "id": 22,
-            "question": "Have you implemented any eviction policies (like LRU/LFU)? If not, how would you design one?",
-            "answer": "I would implement LRU (Least Recently Used) by combining a `ConcurrentHashMap` with a doubly-linked list. Since thread safety is required, I'd either use a lock-free linked list or partition the cache to reduce lock contention when updating the MRU (Most Recently Used) nodes."
-          },
-          {
-            "id": 23,
-            "question": "How do you handle parsing the Redis protocol (RESP)? Are you fully compliant with the Redis specification?",
-            "answer": "I built a custom parser that reads the TCP input stream byte-by-byte, looking for RESP control characters (like `*` for arrays, `$` for bulk strings). It handles basic GET, SET, DEL commands. It may not support the full Redis spec (like Pub/Sub or transactions) but handles the core string-based commands accurately."
-          },
-          {
-            "id": 24,
-            "question": "What happens if a client sends a partially formed command over TCP? How do you buffer the input stream?",
-            "answer": "TCP is a streaming protocol, so messages can be fragmented. I wrap the `Socket.getInputStream()` in a `BufferedReader` or `BufferedInputStream`. The parser waits until it reads the `\\r\\n` terminator. If the connection drops mid-command, the stream throws an `IOException` and the partial command is discarded."
-          },
-          {
-            "id": 25,
-            "question": "How do you handle a client disconnecting abruptly?",
-            "answer": "The `InputStream.read()` method will return `-1` or throw an `IOException` (e.g., \"Connection reset by peer\"). The client handler catches this exception, gracefully closes the socket resources, and the thread is returned to the `ExecutorService`."
-          },
-          {
-            "id": 26,
-            "question": "If the server crashes, all in-memory data is lost. How would you design AOF (Append-Only File) or RDB snapshot persistence for this?",
-            "answer": "For RDB (Snapshotting), I would spin up a background thread that periodically serializes the `ConcurrentHashMap` to disk. For AOF, every mutating command (SET/DEL) would be appended to a log file on disk before returning success to the client, allowing replay on startup."
-          },
-          {
-            "id": 27,
-            "question": "How did you measure the I/O performance of MiniRedis compared to actual Redis?",
-            "answer": "I used the `redis-benchmark` CLI tool, pointing it to my MiniRedis port. While actual Redis easily handles 100k+ ops/sec due to its C-based epoll event loop, MiniRedis hit limitations much earlier due to Java thread overhead and blocking I/O, though it performed well for educational scopes."
-          },
-          {
-            "id": 28,
-            "question": "What are the memory layout differences between your Java objects and Redis's native C structures?",
-            "answer": "Java objects have significant header overhead (e.g., 16 bytes per object header), meaning a simple string key-value pair takes up much more memory in Java than in Redis's highly optimized, contiguous C structs (like `sds` - simple dynamic strings)."
-          },
-          {
-            "id": 29,
-            "question": "How does Java Garbage Collection impact the latency (pause times) of your MiniRedis server?",
-            "answer": "When the JVM performs a \"Stop-The-World\" minor or major GC, all application threads pause. For a real-time database, this causes unpredictable latency spikes. Real Redis (written in C) uses manual memory management (`malloc`/`free`) and doesn't suffer from GC pauses."
-          },
-          {
-            "id": 30,
-            "question": "Could a single slow client still exhaust a thread from your ExecutorService pool? How would you solve this using Java NIO?",
-            "answer": "Yes, because `InputStream.read()` blocks. A client trickling 1 byte per second ties up an entire thread. Using Java NIO (Non-blocking I/O) with `Selector` and `SocketChannel`, a single thread can monitor thousands of connections and only allocate CPU time when data is actually ready to be read, solving the slow-client problem."
+            "id": 2,
+            "question": "Project Overview & Architecture (STAR Method)",
+            "answer": "**Situation**: I wanted to deeply understand low-level networking, thread management, and the Redis serialization protocol (RESP) without relying on high-level abstractions like Netty.\n\n**Task**: Build a fully functional, concurrent in-memory key-value store from scratch in Java that complies with the actual Redis protocol.\n\n**Action**:\n- **Tech Stack**: Built entirely from scratch using **Java Core (Bare-metal TCP Sockets)** and **Concurrency Utilities**.\n- **Networking**: Implemented a multi-threaded server using `ServerSocket` and an `ExecutorService` thread pool to hand off incoming connections rapidly without blocking the main thread.\n- **Concurrency**: Used `ConcurrentHashMap` as the core data structure to guarantee thread-safe read/writes with bucket-level locking, avoiding the massive bottleneck of global locks.\n- **Protocol**: Hand-coded the parser for the RESP protocol to read raw byte streams from the TCP socket, process commands (GET, SET, DEL), and write properly formatted byte responses back to the client.\n\n**Result**: Created a highly performant, thread-safe KV store capable of handling thousands of concurrent connections without data corruption or thread starvation."
           }
         ]
       },
@@ -166,54 +26,9 @@ const prepData = [
         "title": "AI-Powered Customer Analytics Platform",
         "questions": [
           {
-            "id": 31,
-            "question": "What prompted you to use SQLite instead of PostgreSQL or MySQL for this analytics platform?",
-            "answer": "SQLite is serverless, requires zero configuration, and stores the entire database in a single file. Since this was an interactive dashboard primarily focused on data analysis rather than high-concurrency transactional writes, SQLite provided the fastest setup and easiest portability without overhead."
-          },
-          {
-            "id": 32,
-            "question": "Can you explain the statistical A/B testing simulator you engineered? What metrics were you testing?",
-            "answer": "I simulated user cohort data (Control vs. Treatment) evaluating metrics like conversion rate and retention time. I used Scipy to calculate the p-value via a T-test or Chi-Square test, determining if the changes in the treatment group were statistically significant or just random noise."
-          },
-          {
-            "id": 33,
-            "question": "What specific Scikit-learn classification model did you train (e.g., Random Forest, Logistic Regression) and why?",
-            "answer": "I utilized a Random Forest Classifier. It handles non-linear relationships well, is robust to outliers, and inherently provides feature importance scores, which allowed the dashboard to explain exactly *why* a customer was flagged for churn."
-          },
-          {
-            "id": 34,
-            "question": "Churn datasets are notoriously imbalanced. How did you handle class imbalance?",
-            "answer": "I used techniques like SMOTE (Synthetic Minority Over-sampling Technique) to generate synthetic samples of churning users, or applied class weights within the Scikit-learn model parameters (`class_weight='balanced'`) to penalize misclassifying the minority churn class heavier."
-          },
-          {
-            "id": 35,
-            "question": "What features were most mathematically indicative of a user churning?",
-            "answer": "(Answer depends on your synthetic data, but usually): Metrics like \"days since last login\", \"frequency of app usage\", and \"drop in session length\" showed the highest Gini impurity reduction in the Random Forest feature importance analysis."
-          },
-          {
-            "id": 36,
-            "question": "How does the Streamlit dashboard interact with the machine learning model? Is inference done in real-time?",
-            "answer": "The model was pre-trained and saved using `joblib` or `pickle`. When the Streamlit app loads, it loads the model into memory. When a user interacts with the dashboard, inference is done in real-time locally using the pre-loaded model."
-          },
-          {
-            "id": 37,
-            "question": "Can you explain how you integrated the Google Gemini Flash SDK into your data pipeline?",
-            "answer": "I extracted the specific risk factors flagged by the model for a user (e.g., \"usage dropped by 40%\"). I passed these data points via the Gemini Python SDK API call to generate text, instructing the model to act as a customer success manager."
-          },
-          {
-            "id": 38,
-            "question": "How do you construct the prompts to ensure the generated retention emails are actually \"hyper-personalized\"?",
-            "answer": "I used prompt templating. Instead of generic prompts, I injected dynamic variables: `\"Write a re-engagement email to {user_name} who has been a customer for {tenure} but whose usage of {favorite_feature} has dropped by {drop_percentage}. Offer them {incentive}.\"`"
-          },
-          {
-            "id": 39,
-            "question": "What are the latency and cost implications of calling the Gemini API for every flagged user?",
-            "answer": "Calling an LLM API for thousands of users synchronously would be very slow and expensive. I mitigated this by batching API requests (if supported), caching similar prompts, or executing the API calls asynchronously in the background."
-          },
-          {
-            "id": 40,
-            "question": "How do you structurally evaluate if the AI-generated retention emails are effective?",
-            "answer": "I would set up an A/B test pipeline. The control group receives a generic human-written template, and the treatment group receives the Gemini-generated personalized email. I then track the click-through rate (CTR) and 30-day reactivation metrics to determine statistical significance."
+            "id": 3,
+            "question": "Project Overview & Architecture (STAR Method)",
+            "answer": "**Situation**: Businesses often struggle to identify which users are about to churn and fail to act before the user leaves.\n\n**Task**: Build an end-to-end analytics platform that not only predicts user churn but automatically generates hyper-personalized retention emails to save the account.\n\n**Action**:\n- **Tech Stack**: **Python**, **Scikit-learn**, **SQLite**, **Streamlit**, and the **Google Gemini Flash SDK**.\n- **Machine Learning**: Engineered a robust data pipeline and trained classification models using Scikit-learn, carefully handling the severe class imbalances typical in churn datasets.\n- **A/B Testing**: Built a statistical simulator to rigorously A/B test different retention strategies.\n- **Generative AI**: Integrated the Google Gemini API to dynamically consume the user's specific churn factors and generate a highly personalized, targeted retention email.\n- **UI**: Wrapped the entire pipeline in an interactive Streamlit dashboard for easy visualization.\n\n**Result**: Delivered a cohesive, full-stack ML product that bridges the gap between predictive analytics (who will churn) and generative action (how to keep them)."
           }
         ]
       },
@@ -221,54 +36,9 @@ const prepData = [
         "title": "TheAlgorithms (Java Open Source Contribution)",
         "questions": [
           {
-            "id": 41,
-            "question": "Can you explain how a standard Merge Sort differs from your `ConcurrentMergeSort`?",
-            "answer": "Standard Merge Sort recursively divides the array and merges it on a single thread. `ConcurrentMergeSort` delegates the recursive division and sorting of the left and right halves to separate threads in a thread pool, allowing modern multi-core processors to sort sub-arrays in parallel."
-          },
-          {
-            "id": 42,
-            "question": "How does the `ThreadPoolExecutor` slice the array workload? Did you use a fork-join approach?",
-            "answer": "While `ForkJoinPool` is standard for recursive tasks in Java, I utilized a `ThreadPoolExecutor` and wrapped the recursive calls in `Future` tasks. The array indices `(left, right, mid)` are passed to the tasks, and the parent thread waits for both `Future.get()` calls to finish before merging."
-          },
-          {
-            "id": 43,
-            "question": "How do you prevent thread starvation when sorting massive arrays recursively?",
-            "answer": "If every recursive split spawns a new thread, the thread pool queue gets flooded, and parent threads block waiting for children that cannot execute (deadlock/starvation). I solved this by capping the recursion depth for thread creation and using the sequential fallback."
-          },
-          {
-            "id": 44,
-            "question": "You mentioned a \"smart sequential fallback threshold\". How did you empirically determine this threshold size?",
-            "answer": "I ran JMH (Java Microbenchmark Harness) tests on array sizes ranging from 10 to 1,000,000. I plotted the execution times and found that below a certain size (e.g., ~8192 elements), the `Arrays.sort()` sequential method was consistently faster than dispatching the task to a new thread."
-          },
-          {
-            "id": 45,
-            "question": "Why exactly does thread creation overhead dominate for small arrays?",
-            "answer": "Creating a thread, scheduling it on a CPU core, and moving data into the CPU cache takes time. For a small array, the CPU can sequentially sort it in memory much faster than the OS can allocate and switch context to a new thread."
-          },
-          {
-            "id": 46,
-            "question": "What constitutes heavy context-switching overhead at the OS level?",
-            "answer": "When the OS switches execution from Thread A to Thread B, it must save the CPU registers, program counter, and stack state of A, and load the state of B. It also causes CPU cache invalidation (cache misses), which is highly detrimental to performance."
-          },
-          {
-            "id": 47,
-            "question": "How did you write exhaustive JUnit 5 tests to prove thread-safety? What specific concurrency bugs were you testing for?",
-            "answer": "I tested massive arrays with random data, reversed data, and all-identical data. I used `assertArrayEquals` against `Arrays.sort()` results. I was specifically testing for race conditions where multiple threads might attempt to overwrite the same array indices during the merge phase."
-          },
-          {
-            "id": 48,
-            "question": "What strict static analysis checks did your code have to pass before the maintainers merged it?",
-            "answer": "TheAlgorithms repository heavily enforces tools like Checkstyle and SpotBugs. I had to ensure there were no resource leaks, variable shadowing, proper formatting, and that thread pools were safely shut down to prevent memory leaks in the CI/CD pipeline."
-          },
-          {
-            "id": 49,
-            "question": "Did you use `CountDownLatch`, `CyclicBarrier`, or `Future` objects to synchronize the sub-array merges?",
-            "answer": "I used `Future` objects (e.g., `Future<?> leftFuture = executor.submit(...)`). Calling `leftFuture.get()` blocks the current thread until the sub-array is sorted. Once both left and right futures return, the parent thread safely proceeds to the `merge()` step."
-          },
-          {
-            "id": 50,
-            "question": "What was the exact performance improvement (e.g., speedup factor) of your implementation over the sequential version?",
-            "answer": "On a multi-core machine sorting 10 million integers, the `ConcurrentMergeSort` achieved roughly an N-fold speedup (where N is the number of physical CPU cores), minus the overhead of the thread pool. For example, on a 4-core machine, it executed roughly 3x faster than the sequential version."
+            "id": 4,
+            "question": "Project Overview & Architecture (STAR Method)",
+            "answer": "**Situation**: TheAlgorithms is one of the largest open-source repositories for data structures and algorithms. Their standard Merge Sort implementation was strictly sequential and bottlenecked on large datasets.\n\n**Task**: Contribute a thread-safe, highly optimized concurrent version of Merge Sort to improve sorting performance on modern multi-core processors.\n\n**Action**:\n- **Tech Stack**: **Java Core Concurrency API** (`ThreadPoolExecutor`) and **JUnit 5**.\n- **Implementation**: Engineered a `ConcurrentMergeSort` algorithm that recursively slices the array and distributes the sorting workload across a `ThreadPoolExecutor`.\n- **Optimization**: Implemented a \"smart sequential fallback threshold\"\u2014when sub-arrays become small enough, the algorithm automatically falls back to sequential sorting because the OS overhead of thread context-switching becomes heavier than the sorting itself.\n- **Testing**: Wrote exhaustive, heavily scrutinized JUnit 5 test suites to prove absolute thread-safety and correctness under extreme concurrency to pass strict open-source review.\n\n**Result**: The PR was successfully merged by maintainers, delivering a mathematically proven speedup for massive datasets over the legacy sequential implementation."
           }
         ]
       }
