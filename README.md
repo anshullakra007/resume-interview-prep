@@ -13,7 +13,6 @@ https://resume-interview-prep-two.vercel.app
 I designed the site to be a continuous, single-page feed so I can just endlessly scroll through all my study notes. I also built in a few features to make studying easier:
 - **Auto-Highlighting:** All the core technical keywords and code snippets are automatically highlighted with a glowing neon marker effect, so the important concepts immediately pop out when I skim.
 - **Progress Tracking:** Every question has a checkbox next to it. Checking it off gracefully fades out the question so I know I've mastered it (it saves to local storage, so I don't lose progress if I close the tab).
-- **Smart Bookmarking:** I added a little bookmark icon (🔖) on every question. When clicked, it remembers exactly where I left off. The next time I open the site, it automatically scrolls me straight down to my bookmark so I can pick up right where I stopped.
 
 ### The Content
 The questions are broken down into four continuous phases:

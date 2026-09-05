@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let completedQuestions = JSON.parse(localStorage.getItem('resumePrepCompleted') || '[]');
-    let bookmarkedQuestionId = parseInt(localStorage.getItem('resumePrepBookmark'), 10) || null;
 
     function formatText(text) {
         if (!text) return '';
@@ -74,26 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         localStorage.setItem('resumePrepCompleted', JSON.stringify(completedQuestions));
                     };
 
-                    const bookmarkBtn = document.createElement('button');
-                    bookmarkBtn.className = `bookmark-btn ${bookmarkedQuestionId === q.id ? 'active-bookmark' : ''}`;
-                    bookmarkBtn.innerHTML = '🔖';
-                    bookmarkBtn.title = 'Bookmark this question';
-                    bookmarkBtn.onclick = (e) => {
-                        e.stopPropagation();
-                        if (bookmarkedQuestionId === q.id) {
-                            bookmarkedQuestionId = null;
-                            localStorage.removeItem('resumePrepBookmark');
-                            bookmarkBtn.classList.remove('active-bookmark');
-                        } else {
-                            bookmarkedQuestionId = q.id;
-                            localStorage.setItem('resumePrepBookmark', q.id);
-                            // Re-render to update bookmark icons across all items
-                            renderContent();
-                        }
-                    };
-
                     controls.appendChild(checkbox);
-                    controls.appendChild(bookmarkBtn);
 
                     const questionText = document.createElement('span');
                     questionText.className = 'question-text';
@@ -140,17 +120,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize
     if (typeof prepData !== 'undefined') {
         renderContent();
-        
-        // Scroll to bookmark on initial load if it exists
-        if (bookmarkedQuestionId) {
-            setTimeout(() => {
-                const item = document.getElementById(`question-${bookmarkedQuestionId}`);
-                if (item) {
-                    item.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    item.classList.add('open');
-                }
-            }, 300);
-        }
     } else {
         contentContainer.innerHTML = '<p style="color:red; text-align:center;">Error: data.js not loaded. Please make sure the data script is included.</p>';
     }
